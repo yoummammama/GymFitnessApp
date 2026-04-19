@@ -3,14 +3,14 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Login - Bhub GYM and Fitness</title>
+    <title>Login - GYM and Fitness</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="min-h-screen bg-[#020617] text-white">
     <div class="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(249,115,22,0.16),_transparent_25%),radial-gradient(circle_at_bottom_right,_rgba(34,197,94,0.12),_transparent_30%)] px-6 py-8 sm:px-10">
         <div class="mx-auto max-w-xl rounded-[2rem] border border-white/10 bg-white/5 p-8 shadow-2xl shadow-black/20 backdrop-blur-lg">
             <header class="flex items-center justify-between mb-10">
-                <a href="{{ route('home') }}" class="text-xl font-semibold tracking-tight text-white">Bhub <span class="text-[#f97316]">GYM</span> and Fitness</a>
+                <a href="{{ route('home') }}" class="text-xl font-semibold tracking-tight text-white"><span class="text-[#f97316]">GYM</span> and Fitness</a>
                 <a href="{{ route('register') }}" class="rounded-full border border-white/20 bg-white/5 px-5 py-2 text-sm uppercase tracking-[0.2em] text-white hover:bg-white/10">Sign Up</a>
             </header>
 

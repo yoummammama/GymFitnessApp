@@ -10,7 +10,7 @@
     <div class="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(245,75,66,0.18),_transparent_25%),radial-gradient(circle_at_bottom_left,_rgba(59,130,246,0.12),_transparent_30%)] px-6 py-8 sm:px-10">
         <div class="mx-auto max-w-xl rounded-[2rem] border border-white/10 bg-white/5 p-8 shadow-2xl shadow-black/20 backdrop-blur-lg">
             <header class="flex items-center justify-between mb-10">
-                <a href="{{ route('home') }}" class="text-xl font-semibold tracking-tight text-white">Bhub <span class="text-[#f97316]">GYM</span> and Fitness</a>
+                <a href="{{ route('home') }}" class="text-xl font-semibold tracking-tight text-white"><span class="text-[#f97316]">GYM</span> and Fitness</a>
                 <a href="{{ route('login') }}" class="rounded-full border border-white/20 bg-white/5 px-5 py-2 text-sm uppercase tracking-[0.2em] text-white hover:bg-white/10">Login</a>
             </header>
 
@@ -44,8 +44,8 @@
                 </label>
 
                 <label class="block text-sm font-medium text-slate-200">
-                    Phone number
-                    <input type="text" name="phone_number" value="{{ old('phone_number') }}" required class="mt-2 w-full rounded-3xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white outline-none transition focus:border-[#f97316] focus:ring-2 focus:ring-[#f97316]/30" />
+                    Student ID
+                    <input type="text" name="student_id" value="{{ old('student_id') }}" required class="mt-2 w-full rounded-3xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white outline-none transition focus:border-[#f97316] focus:ring-2 focus:ring-[#f97316]/30" />
                 </label>
 
                 <div class="grid gap-6 sm:grid-cols-2">

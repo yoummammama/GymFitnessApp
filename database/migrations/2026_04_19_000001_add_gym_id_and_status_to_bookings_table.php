@@ -1,0 +1,40 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::table('bookings', function (Blueprint $table) {
+            if (!Schema::hasColumn('bookings', 'gym_id')) {
+                $table->foreignId('gym_id')->nullable()->after('student_id')->constrained()->onDelete('cascade');
+            }
+
+            if (!Schema::hasColumn('bookings', 'status')) {
+                $table->string('status')->default('Pending')->after('booking_time');
+            }
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::table('bookings', function (Blueprint $table) {
+            if (Schema::hasColumn('bookings', 'gym_id')) {
+                $table->dropConstrainedForeignId('gym_id');
+            }
+
+            if (Schema::hasColumn('bookings', 'status')) {
+                $table->dropColumn('status');
+            }
+        });
+    }
+};

@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('bookings', function (Blueprint $table) {
         $table->id();
         $table->foreignId('student_id')->constrained()->onDelete('cascade');
+        $table->foreignId('gym_id')->constrained()->onDelete('cascade');
         $table->dateTime('booking_time');
         $table->timestamps();
         });

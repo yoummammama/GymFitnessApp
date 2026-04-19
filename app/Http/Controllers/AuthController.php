@@ -48,14 +48,14 @@ class AuthController extends Controller
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
-            'phone_number' => ['required', 'string', 'max:25'],
             'password' => ['required', 'confirmed', 'min:8'],
+            'student_id' => ['required', 'string', 'max:255', 'unique:users,student_id'],
         ]);
 
         $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
-            'phoneNumber' => $data['phone_number'],
+            'student_id' => $data['student_id'],
             'password' => Hash::make($data['password']),
         ]);
 
@@ -66,7 +66,14 @@ class AuthController extends Controller
 
     public function dashboard()
     {
-        return view('dashboard');
+        $bookings = Auth::user()->bookings()
+            ->with('gym')
+            ->where('status', '!=', 'Cancelled')
+            ->where('booking_time', '>=', now())
+            ->orderBy('booking_time')
+            ->get();
+
+        return view('dashboard', compact('bookings'));
     }
 
     public function logout(Request $request)
