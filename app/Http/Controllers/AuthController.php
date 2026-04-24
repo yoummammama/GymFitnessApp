@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Http\Requests\LoginRequest;
+use App\Http\Requests\RegisterRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -21,16 +23,22 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
-        ]);
+        $credentials = $request->validated();
+        $remember = $request->boolean('remember');
 
-        if (Auth::attempt($credentials, $request->boolean('remember')))
+        if (Auth::attempt($credentials, $remember))
         {
             $request->session()->regenerate();
+
+            // Store intentional session data
+            $user = Auth::user();
+            $request->session()->put([
+                'user_last_login' => now(),
+                'user_role' => $user->role,
+                'user_name' => $user->name,
+            ]);
 
             return redirect()->intended(route('dashboard'));
         }
@@ -45,25 +53,24 @@ class AuthController extends Controller
         return view('auth.register');
     }
 
-    public function register(Request $request)
+    public function register(RegisterRequest $request)
     {
-        $data = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
-            'password' => ['required', 'confirmed', 'min:8'],
-            'user_id' => ['required', 'string', 'max:255', 'unique:users,user_id'],
-        ]);
+        $data = $request->validated();
 
         $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'user_id' => $data['user_id'],
             'password' => Hash::make($data['password']),
+            'role' => 'user', // Default role
         ]);
+
+        // Send verification email
+        $user->sendEmailVerificationNotification();
 
         Auth::login($user);
 
-        return redirect()->route('dashboard')->with('status', 'Welcome to Bhub GYM and Fitness!');
+        return redirect()->route('verification.notice')->with('status', 'Account created! Please verify your email to continue.');
     }
 
     public function dashboard()
@@ -89,5 +96,43 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
 
         return redirect('/')->with('status', 'You are logged out.');
+    }
+
+    /**
+     * Show email verification notice
+     */
+    public function verifyEmail()
+    {
+        return view('auth.verify-email');
+    }
+
+    /**
+     * Handle email verification
+     */
+    public function verifyHandler(Request $request)
+    {
+        if ($request->user()->hasVerifiedEmail()) {
+            return redirect()->route('dashboard')->with('status', 'Email already verified.');
+        }
+
+        if ($request->user()->markEmailAsVerified()) {
+            event(new \Illuminate\Auth\Events\Verified($request->user()));
+        }
+
+        return redirect()->route('dashboard')->with('status', 'Email verified successfully!');
+    }
+
+    /**
+     * Resend verification email
+     */
+    public function resendVerificationEmail(Request $request)
+    {
+        if ($request->user()->hasVerifiedEmail()) {
+            return redirect()->route('dashboard')->with('status', 'Email already verified.');
+        }
+
+        $request->user()->sendEmailVerificationNotification();
+
+        return back()->with('status', 'Verification email has been resent.');
     }
 }

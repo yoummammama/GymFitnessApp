@@ -97,6 +97,43 @@
                             </div>
                         </div>
 
+                        {{-- ===== FILTER FORM (CO1 #5) ===== --}}
+                        <form method="GET" action="{{ route('booking.index') }}" class="mb-6 space-y-3">
+                            <p class="text-xs uppercase tracking-[0.25em] text-slate-400">Filter bookings</p>
+                            <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                                {{-- Gym filter --}}
+                                <select name="gym_id" class="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-2.5 text-sm text-white outline-none transition focus:border-[#f97316] focus:ring-1 focus:ring-[#f97316]/30">
+                                    <option value="">All Gyms</option>
+                                    @foreach ($gyms as $gym)
+                                        <option value="{{ $gym->id }}" @selected($gymFilter == $gym->id)>{{ $gym->name }}</option>
+                                    @endforeach
+                                </select>
+
+                                {{-- Status filter --}}
+                                <select name="status" class="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-2.5 text-sm text-white outline-none transition focus:border-[#f97316] focus:ring-1 focus:ring-[#f97316]/30">
+                                    <option value="">All Statuses</option>
+                                    @foreach (['Pending', 'Confirmed', 'Cancelled'] as $s)
+                                        <option value="{{ $s }}" @selected($statusFilter === $s)>{{ $s }}</option>
+                                    @endforeach
+                                </select>
+
+                                {{-- Date from --}}
+                                <input type="date" name="date_from" value="{{ $dateFrom }}"
+                                    class="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-2.5 text-sm text-white outline-none transition focus:border-[#f97316] focus:ring-1 focus:ring-[#f97316]/30"
+                                    placeholder="From date" />
+
+                                {{-- Date to --}}
+                                <input type="date" name="date_to" value="{{ $dateTo }}"
+                                    class="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-2.5 text-sm text-white outline-none transition focus:border-[#f97316] focus:ring-1 focus:ring-[#f97316]/30"
+                                    placeholder="To date" />
+                            </div>
+                            <div class="flex gap-3 pt-1">
+                                <button type="submit" class="rounded-full bg-[#f97316] px-5 py-2 text-xs font-semibold uppercase tracking-[0.15em] text-slate-950 transition hover:bg-[#fb923c]">Apply Filters</button>
+                                <a href="{{ route('booking.index') }}" class="rounded-full border border-white/20 bg-white/5 px-5 py-2 text-xs uppercase tracking-[0.15em] text-white transition hover:bg-white/10">Clear</a>
+                            </div>
+                        </form>
+                        {{-- ===== END FILTER FORM ===== --}}
+
                         @if ($bookings->isEmpty())
                             <div class="rounded-[1.5rem] border border-white/10 bg-[#0f172a] p-6 text-slate-300">
                                 You don’t have any bookings yet. Reserve your first session using the form on the left.

@@ -12,13 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('bookings', function (Blueprint $table) {
-            if (!Schema::hasColumn('bookings', 'gym_id')) {
-                $table->foreignId('gym_id')->nullable()->after('user_id')->constrained()->onDelete('cascade');
-            }
-
-            if (!Schema::hasColumn('bookings', 'status')) {
-                $table->string('status')->default('Pending')->after('booking_time');
-            }
+            // Columns are now defined in create_bookings_table migration
+            // This migration is kept for backwards compatibility with existing environments
         });
     }
 

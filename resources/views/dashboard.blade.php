@@ -13,6 +13,20 @@
                 <div>
                     <p class="text-sm uppercase tracking-[0.35em] text-[#f97316]"> GYM and Fitness</p>
                     <h1 class="mt-3 text-3xl font-semibold text-white sm:text-4xl">HELLO, {{ Auth::user()->name }}.</h1>
+                    {{-- CO2 #3: Read intentional session data stored on login --}}
+                    <div class="mt-2 flex flex-wrap items-center gap-3">
+                        @if (session('user_last_login'))
+                            <span class="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-slate-300">
+                                <svg class="h-3 w-3 text-[#f97316]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                Last login: {{ \Carbon\Carbon::parse(session('user_last_login'))->format('d M Y, h:i A') }}
+                            </span>
+                        @endif
+                        @if (session('user_role'))
+                            <span class="inline-flex items-center rounded-full border border-[#f97316]/30 bg-[#f97316]/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.15em] text-[#f97316]">
+                                {{ session('user_role') }}
+                            </span>
+                        @endif
+                    </div>
                 </div>
                  @can('access-admin')
                  <form method="POST" action="{{ route('logout') }}">

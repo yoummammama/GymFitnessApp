@@ -19,10 +19,16 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
     Route::get('/booking', [BookingController::class, 'index'])->name('booking.index');
+    Route::get('/booking/{booking}', [BookingController::class, 'show'])->name('booking.show');
     Route::get('/booking/{booking}/edit', [BookingController::class, 'edit'])->name('booking.edit');
     Route::put('/booking/{booking}', [BookingController::class, 'update'])->name('booking.update');
     Route::delete('/booking/{booking}', [BookingController::class, 'destroy'])->name('booking.destroy');
     Route::post('/booking', [BookingController::class, 'store'])->name('booking.store');
+
+    // Email verification routes
+    Route::get('/email/verify', [AuthController::class, 'verifyEmail'])->name('verification.notice');
+    Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'verifyHandler'])->middleware('signed')->name('verification.verify');
+    Route::post('/email/resend', [AuthController::class, 'resendVerificationEmail'])->middleware('throttle:6,1')->name('verification.send');
 });
 
 // Admin routes - protected by auth and can:access-admin-panel middleware
