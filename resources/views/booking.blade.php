@@ -25,6 +25,15 @@
                 <div class="mb-8 rounded-3xl border border-emerald-500/20 bg-emerald-500/10 p-4 text-sm text-emerald-50">{{ session('status') }}</div>
             @endif
 
+            @if(session('error'))
+    <div class="mb-6 flex items-center bg-red-900/30 border border-red-500/50 text-red-200 px-4 py-3 rounded-xl backdrop-blur-sm animate-pulse" role="alert">
+        <svg class="w-5 h-5 mr-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <span class="text-sm font-medium">{{ session('error') }}</span>
+    </div>
+@endif
+
             @if ($errors->any())
                 <div class="mb-8 rounded-3xl border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-100">
                     <ul class="space-y-1">
@@ -75,6 +84,7 @@
 
                             <button type="submit" class="w-full rounded-3xl bg-[#f97316] px-6 py-4 text-sm font-semibold uppercase tracking-[0.18em] text-slate-950 transition hover:bg-[#fb923c]">Confirm Booking</button>
                         </form>
+                        
                     </div>
                 </section>
 

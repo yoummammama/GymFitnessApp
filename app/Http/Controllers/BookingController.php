@@ -45,7 +45,9 @@ class BookingController extends Controller
             'booking_date' => ['required', 'date', 'after_or_equal:today'],
             'time_slot' => ['required', 'string', 'in:8:00 AM - 10:00 AM,10:00 AM - 12:00 PM,12:00 PM - 2:00 PM,2:00 PM - 4:00 PM,4:00 PM - 6:00 PM'],
         ]);
-
+        if ($validated['time_slot'] === '12:00 PM - 2:00 PM') {
+        return back()->withInput()->with('error', 'Fully booked.');
+    }
         $startTime = explode(' - ', $validated['time_slot'])[0];
         $bookingTime = Carbon::createFromFormat('Y-m-d g:i A', $validated['booking_date'] . ' ' . $startTime);
 
@@ -94,6 +96,9 @@ class BookingController extends Controller
             'booking_date' => ['required', 'date', 'after_or_equal:today'],
             'time_slot' => ['required', 'string', 'in:8:00 AM - 10:00 AM,10:00 AM - 12:00 PM,12:00 PM - 2:00 PM,2:00 PM - 4:00 PM,4:00 PM - 6:00 PM'],
         ]);
+        if ($validated['time_slot'] === '12:00 PM - 2:00 PM') {
+            return back()->withInput()->with('error', 'Fully booked.');
+        }
 
         $startTime = explode(' - ', $validated['time_slot'])[0];
         $bookingTime = Carbon::createFromFormat('Y-m-d g:i A', $validated['booking_date'] . ' ' . $startTime);
