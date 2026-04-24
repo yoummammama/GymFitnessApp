@@ -18,8 +18,14 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
+    protected $primaryKey = 'user_id';
+
+    // IMPORTANT: If 'user_id' is NOT an auto-incrementing integer (e.g., it is '122' but managed manually), 
+    // you must add these two lines so Laravel doesn't try to "guess" the ID type.
+    public $incrementing = false; 
+    protected $keyType = 'string';
     protected $fillable = [
-        'student_id',
+        'user_id',
         'name',
         'email',
         'password',
@@ -50,6 +56,22 @@ class User extends Authenticatable
     }
     public function bookings()
     {
-        return $this->hasMany(Booking::class, 'student_id');
+        return $this->hasMany(Booking::class, 'user_id','user_id');
+    }
+
+    // Inside User.php
+
+    public function admin()
+    {
+        // A user has one admin profile (if they are an admin)
+        return $this->hasOne(Admin::class, 'user_id', 'user_id');   
+    }
+
+    /**
+     * Helper to check if the user has admin privileges
+     */
+    public function isAdmin(): bool
+    {
+        return $this->admin()->exists();
     }
 }

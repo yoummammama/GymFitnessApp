@@ -6,6 +6,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Gate;
+use App\Models\Booking;
 
 class AuthController extends Controller
 {
@@ -49,13 +51,13 @@ class AuthController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'confirmed', 'min:8'],
-            'student_id' => ['required', 'string', 'max:255', 'unique:users,student_id'],
+            'user_id' => ['required', 'string', 'max:255', 'unique:users,user_id'],
         ]);
 
         $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
-            'student_id' => $data['student_id'],
+            'user_id' => $data['user_id'],
             'password' => Hash::make($data['password']),
         ]);
 
@@ -66,13 +68,16 @@ class AuthController extends Controller
 
     public function dashboard()
     {
-        $bookings = Auth::user()->bookings()
-            ->with('gym')
-            ->where('status', '!=', 'Cancelled')
-            ->where('booking_time', '>=', now())
-            ->orderBy('booking_time')
-            ->get();
+        // Check the Gate exactly like we do in the Blade file
+        if (Gate::allows('access-admin')) {
+            // You are an ADMIN: Fetch ALL bookings in the system
+            $bookings = Booking::with(['user', 'gym'])->get(); 
+        } else {
+            // You are a USER: Fetch ONLY your personal bookings
+            $bookings = Auth::user()->bookings()->with('gym')->get(); 
+        }
 
+        // Return the single dashboard view we built with the @can logic
         return view('dashboard', compact('bookings'));
     }
 

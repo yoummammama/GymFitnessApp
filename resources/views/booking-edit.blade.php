@@ -52,13 +52,16 @@
 
                     <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <button type="submit" class="rounded-3xl bg-[#f97316] px-6 py-4 text-sm font-semibold uppercase tracking-[0.18em] text-slate-950 transition hover:bg-[#fb923c]">Save Changes</button>
-                        <form method="POST" action="{{ route('booking.destroy', $booking) }}" class="inline">
+
+                    </div>
+                </form>
+                <div class="mt-6 border-t border-white/10 pt-6">
+                                            <form method="POST" action="{{ route('booking.destroy', $booking) }}" class="inline">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="rounded-3xl border border-red-500/30 bg-red-500/10 px-6 py-4 text-sm font-semibold uppercase tracking-[0.18em] text-red-300 transition hover:bg-red-500/20">Cancel Booking</button>
                         </form>
-                    </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>

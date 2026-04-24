@@ -8,9 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Booking extends Model
 {
     use HasFactory;
-
     protected $fillable = [
-        'student_id',
+        'user_id',
         'gym_id',
         'booking_time',
         'status',
@@ -22,7 +21,8 @@ class Booking extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'student_id');
+        
+        return $this->belongsTo(User::class, 'user_id', 'user_id');
     }
 
     public function gym()

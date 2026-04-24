@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\AdminBookingController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [AuthController::class, 'homepage'])->name('home');
@@ -23,3 +24,12 @@ Route::middleware('auth')->group(function () {
     Route::delete('/booking/{booking}', [BookingController::class, 'destroy'])->name('booking.destroy');
     Route::post('/booking', [BookingController::class, 'store'])->name('booking.store');
 });
+
+// Admin routes - protected by auth and can:access-admin-panel middleware
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [AdminBookingController::class, 'dashboard'])->name('dashboard');
+    Route::patch('/booking/{booking}', [AdminBookingController::class, 'update'])->name('booking.update');
+    Route::delete('/booking/{booking}', [AdminBookingController::class, 'destroy'])->name('booking.destroy');
+});
+
+

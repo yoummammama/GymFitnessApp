@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('bookings', function (Blueprint $table) {
             if (!Schema::hasColumn('bookings', 'gym_id')) {
-                $table->foreignId('gym_id')->nullable()->after('student_id')->constrained()->onDelete('cascade');
+                $table->foreignId('gym_id')->nullable()->after('user_id')->constrained()->onDelete('cascade');
             }
 
             if (!Schema::hasColumn('bookings', 'status')) {

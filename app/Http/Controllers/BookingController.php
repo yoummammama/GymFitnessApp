@@ -7,28 +7,12 @@ use App\Models\Gym;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class BookingController extends Controller
 {
     public function index()
     {
-        $gyms = Gym::all();
-
-        if ($gyms->isEmpty()) {
-            $gyms = collect([
-                Gym::create([
-                    'name' => 'BHUB',
-                    'campus_location' => 'Sg.Long',
-                    'max_capacity' => 40,
-                ]),
-                Gym::create([
-                    'name' => 'Batuu',
-                    'campus_location' => 'Kampar',
-                    'max_capacity' => 35,
-                ]),
-            ]);
-        }
-
         $timeSlots = [
             '8:00 AM - 10:00 AM',
             '10:00 AM - 12:00 PM',
@@ -38,6 +22,7 @@ class BookingController extends Controller
         ];
 
         $slotStatus = [];
+        $gyms = Gym::all();
         foreach ($gyms as $gym) {
             $slotStatus[$gym->id] = [
                 '8:00 AM - 10:00 AM' => 'Available',
@@ -65,7 +50,7 @@ class BookingController extends Controller
         $bookingTime = Carbon::createFromFormat('Y-m-d g:i A', $validated['booking_date'] . ' ' . $startTime);
 
         Booking::create([
-            'student_id' => Auth::id(),
+            'user_id' => Auth::user()->user_id,
             'gym_id' => $validated['gym_id'],
             'booking_time' => $bookingTime,
             'status' => 'Confirmed',
@@ -76,9 +61,15 @@ class BookingController extends Controller
 
     public function edit(Booking $booking)
     {
-        if ($booking->student_id !== Auth::id()) {
-            abort(403);
-        }
+      
+    $isOwner = $booking->user_id == Auth::user()->user_id;
+
+    $isAdmin = Gate::allows('access-admin');
+
+    // If NEITHER is true, kick them out
+    if (!$isOwner && !$isAdmin) {
+        abort(403, 'You do not have permission to edit this booking.');
+    }
 
         $gyms = Gym::all();
         $timeSlots = [
@@ -94,7 +85,7 @@ class BookingController extends Controller
 
     public function update(Request $request, Booking $booking)
     {
-        if ($booking->student_id !== Auth::id()) {
+        if ($booking->user_id !== Auth::user()->user_id) {
             abort(403);
         }
 
@@ -118,12 +109,19 @@ class BookingController extends Controller
 
     public function destroy(Booking $booking)
     {
-        if ($booking->student_id !== Auth::id()) {
+        $isOwner = $booking->user_id == Auth::user()->user_id;
+
+        $isAdmin = Gate::allows('access-admin');
+        if (!$isOwner&& !$isAdmin) {
             abort(403);
-        }
+                        }
 
         $booking->update(['status' => 'Cancelled']);
-
+        if($isOwner){
         return redirect()->route('booking.index')->with('status', 'Booking has been cancelled.');
+        }
+        if($isAdmin){
+            return redirect()->route('admin.dashboard')->with('status', 'Booking has been cancelled.');
+        }
     }
 }

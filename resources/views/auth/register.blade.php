@@ -44,8 +44,8 @@
                 </label>
 
                 <label class="block text-sm font-medium text-slate-200">
-                    Student ID
-                    <input type="text" name="student_id" value="{{ old('student_id') }}" required class="mt-2 w-full rounded-3xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white outline-none transition focus:border-[#f97316] focus:ring-2 focus:ring-[#f97316]/30" />
+                    User ID
+                    <input type="text" name="user_id" value="{{ old('user_id') }}" required class="mt-2 w-full rounded-3xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white outline-none transition focus:border-[#f97316] focus:ring-2 focus:ring-[#f97316]/30" />
                 </label>
 
                 <div class="grid gap-6 sm:grid-cols-2">
