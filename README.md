@@ -41,7 +41,7 @@ A modern, responsive fitness center website built with Laravel and Tailwind CSS.
 
 5. **Environment Setup**
    ```bash
-   cp .env.example .env
+   copy .env.example .env
    php artisan key:generate
    ```
 
