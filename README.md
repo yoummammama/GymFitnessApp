@@ -13,33 +13,43 @@ A modern, responsive fitness center website built with Laravel and Tailwind CSS.
 
 ### Installation
 
+> **Important**: Before pulling any changes, always check your git branch to ensure you're on the correct branch:
+> ```bash
+> git branch
+> git checkout <branch-name>
+> ```
+
 1. **Clone the repository**
    ```bash
    git clone <repository-url>
    cd GymFitnessSystem
    ```
 
-2. **Install PHP dependencies**
+2. **Download Composer** (if not already installed)
+   - Download from [getcomposer.org](https://getcomposer.org/download/)
+   - Or follow the installation guide for your OS
+
+3. **Install PHP dependencies**
    ```bash
    composer install
    ```
 
-3. **Install Node.js dependencies**
+4. **Install Node.js dependencies**
    ```bash
    npm install
    ```
 
-4. **Environment Setup**
+5. **Environment Setup**
    ```bash
    cp .env.example .env
    php artisan key:generate
    ```
 
-5. **Database Setup**
+6. **Database Setup**
    ```bash
    # Configure your database in .env file
    php artisan migrate
-   php artisan db:seed  # Optional: seed with sample data
+   php artisan db:seed
    ```
 
 ### Running the Application
