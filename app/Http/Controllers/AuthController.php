@@ -61,14 +61,12 @@ class AuthController extends Controller
     {
         $data = $request->validated();
 
-        if (!is_numeric($data['user_id'])) {
-            return back()->withErrors(['user_id' => 'User ID must be a number.'])->withInput();
-        }
+    
 
         $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
-            'user_id' => (int) $data['user_id'],
+            'user_id' => $data['user_id'],
             'password' => Hash::make($data['password']),
             'role' => 'user', // Default role
             'last_login_at' => now(),

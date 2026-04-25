@@ -26,7 +26,7 @@ class RegisterRequest extends FormRequest
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'confirmed', 'min:8', 'string'],
             'password_confirmation' => ['required', 'string'],
-            'user_id' => ['required', 'string', 'max:255', 'unique:users,user_id'],
+            'user_id' => ['required', 'int', 'max:255', 'unique:users,user_id'],
         ];
     }
 
@@ -52,6 +52,7 @@ class RegisterRequest extends FormRequest
             'user_id.required' => 'User ID is required.',
             'user_id.unique' => 'This user ID is already taken.',
             'user_id.max' => 'User ID cannot exceed 255 characters.',
+            'user_id.integer' => 'User ID must be number.'
         ];
     }
 }
