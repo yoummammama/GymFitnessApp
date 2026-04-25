@@ -32,13 +32,17 @@ class AuthController extends Controller
         {
             $request->session()->regenerate();
 
-            // Store intentional session data
             $user = Auth::user();
+            $previousLogin = $user->last_login_at;
+
+            // Store intentional session data using the previous login timestamp
             $request->session()->put([
-                'user_last_login' => now(),
-                'user_role' => $user->role,
+                'user_last_login' => $previousLogin,
+                'user_role' => $user->isAdmin() ? 'Admin' : ($user->role ?? 'User'),
                 'user_name' => $user->name,
             ]);
+
+            $user->update(['last_login_at' => now()]);
 
             return redirect()->intended(route('dashboard'));
         }
@@ -63,14 +67,12 @@ class AuthController extends Controller
             'user_id' => $data['user_id'],
             'password' => Hash::make($data['password']),
             'role' => 'user', // Default role
+            'last_login_at' => now(),
         ]);
-
-        // Send verification email
-        $user->sendEmailVerificationNotification();
 
         Auth::login($user);
 
-        return redirect()->route('verification.notice')->with('status', 'Account created! Please verify your email to continue.');
+        return redirect()->route('dashboard')->with('status', 'Account created successfully.');
     }
 
     public function dashboard()
@@ -98,41 +100,4 @@ class AuthController extends Controller
         return redirect('/')->with('status', 'You are logged out.');
     }
 
-    /**
-     * Show email verification notice
-     */
-    public function verifyEmail()
-    {
-        return view('auth.verify-email');
-    }
-
-    /**
-     * Handle email verification
-     */
-    public function verifyHandler(Request $request)
-    {
-        if ($request->user()->hasVerifiedEmail()) {
-            return redirect()->route('dashboard')->with('status', 'Email already verified.');
-        }
-
-        if ($request->user()->markEmailAsVerified()) {
-            event(new \Illuminate\Auth\Events\Verified($request->user()));
-        }
-
-        return redirect()->route('dashboard')->with('status', 'Email verified successfully!');
-    }
-
-    /**
-     * Resend verification email
-     */
-    public function resendVerificationEmail(Request $request)
-    {
-        if ($request->user()->hasVerifiedEmail()) {
-            return redirect()->route('dashboard')->with('status', 'Email already verified.');
-        }
-
-        $request->user()->sendEmailVerificationNotification();
-
-        return back()->with('status', 'Verification email has been resent.');
-    }
 }

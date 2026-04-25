@@ -21,6 +21,7 @@ class AdminUserSeeder extends Seeder
                 'name' => 'System Admin',
                 'user_id' => '122',
                 'password' => Hash::make('admin123'),
+                'last_login_at' => now(),
             ]
         );
 

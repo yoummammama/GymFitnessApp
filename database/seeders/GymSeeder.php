@@ -16,12 +16,12 @@ class GymSeeder extends Seeder
             [
                 'name' => 'BHUB',
                 'campus_location' => 'Sg.Long',
-                'max_capacity' => 40,
+                'max_capacity' => 10,
             ],
             [
                 'name' => 'Batuu',
                 'campus_location' => 'Kampar',
-                'max_capacity' => 35,
+                'max_capacity' => 20,
             ],
         ];
 

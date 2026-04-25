@@ -42,8 +42,9 @@ class AdminBookingController extends Controller
             'time_slot' => ['required', 'string', 'in:8:00 AM - 10:00 AM,10:00 AM - 12:00 PM,12:00 PM - 2:00 PM,2:00 PM - 4:00 PM,4:00 PM - 6:00 PM'],
         ]);
 
+        $timezone = config('app.timezone');
         $startTime = explode(' - ', $validated['time_slot'])[0];
-        $bookingTime = \Carbon\Carbon::createFromFormat('Y-m-d g:i A', $validated['booking_date'] . ' ' . $startTime);
+        $bookingTime = \Carbon\Carbon::createFromFormat('Y-m-d g:i A', $validated['booking_date'] . ' ' . $startTime, $timezone);
 
         $booking->update([
             'status' => $validated['status'],

@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             AdminUserSeeder::class,
             GymSeeder::class,
             UserSeeder::class,
+            BookingSeeder::class,
         ]);
     }
 }

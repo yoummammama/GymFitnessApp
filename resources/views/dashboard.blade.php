@@ -69,11 +69,12 @@
 
             <section class="mt-10 rounded-[1.75rem] border border-white/10 bg-slate-950/70 p-8 shadow-xl shadow-black/20">
                 @can('access-admin')
-                    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
+                    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
                         <div>
                             <p class="text-sm uppercase tracking-[0.35em] text-[#f97316]">All Bookings</p>
                             <h2 class="mt-2 text-2xl font-semibold text-white">Manage all user bookings</h2>
                         </div>
+                        <a href="{{ route('admin.gyms.index') }}" class="inline-flex items-center justify-center rounded-full border border-white/20 bg-white/5 px-6 py-3 text-sm uppercase tracking-[0.15em] text-white transition hover:bg-white/10">Manage Gyms</a>
                     </div>
 
                     @if (isset($bookings) && $bookings->isNotEmpty())

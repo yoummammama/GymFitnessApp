@@ -2,13 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-
-use App\Models\Admin;
 use App\Models\User;
-
+use Illuminate\Support\Str;
 
 class UserSeeder extends Seeder
 {
@@ -17,38 +14,22 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-    $users = [
-            [
-                'user_id' => '132',
-                'name' => 'Tomoa',
-                'email' => 'tomoa@example.com',
-                'password' => Hash::make('password123'),
-              
-            ],
-            [
-                'user_id' => '126',
-                'name' => 'Alyin Yes',
-                'email' => 'alvin@gymfitness.com',
-                'password' => Hash::make('alvin'),
-               
-            ],
-            [
-                'user_id' => '124',
-                'name' => 'John Doe',
-                'email' => 'john@example.com',
-                'password' => Hash::make('user123'),
-                
-            ],
-        ];
+        foreach (range(1, 10) as $index) {
+            $letter = chr(64 + $index); 
+            $email = 'user' . strtolower($letter) . '@example.com';
 
-        foreach ($users as $userData) {
+            // Use firstOrCreate to prevent "Duplicate Entry" errors
             User::firstOrCreate(
-                ['email' => $userData['email']], // Prevents duplicates if you run it twice
-                $userData
+                ['email' => $email], // Search criteria
+                [
+                    'user_id'       => 100 + $index, 
+                    'name'          => 'User ' . $letter,
+                    'password'      => Hash::make('password123'),
+                    'last_login_at' => now(),
+                ]
             );
         }
 
-        $this->command->info('3 Users seeded successfully!');
-    
+        $this->command->info('8 Random users seeded successfully!');
     }
 }

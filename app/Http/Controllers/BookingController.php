@@ -30,10 +30,11 @@ class BookingController extends Controller
 
         foreach ($gyms as $gym) {
             $slotStatus[$gym->id] = [];
-            foreach ($this->timeSlots as $slot) {
+            $timezone = config('app.timezone');
+        foreach ($this->timeSlots as $slot) {
                 // Parse the slot time
                 $startTime = explode(' - ', $slot)[0];
-                $bookingTime = Carbon::createFromFormat('Y-m-d g:i A', $date . ' ' . $startTime);
+                $bookingTime = Carbon::createFromFormat('Y-m-d g:i A', $date . ' ' . $startTime, $timezone);
 
                 // Count active bookings for this gym, date, and time slot
                 $bookingCount = Booking::where('gym_id', $gym->id)
@@ -64,14 +65,14 @@ class BookingController extends Controller
     public function index(Request $request)
     {
         $gyms = Gym::all();
-        $slotStatus = $this->computeSlotStatus($gyms);
+        $selectedDate = $request->get('booking_date', now()->format('Y-m-d'));
+        $slotStatus = $this->computeSlotStatus($gyms, $selectedDate);
         
         // Get filter parameters from the request
         $gymFilter = $request->get('gym_id');
         $statusFilter = $request->get('status');
-        $dateFrom = $request->get('date_from');
-        $dateTo = $request->get('date_to');
         $searchEmail = $request->get('search_email');
+        $selectedGymId = $request->get('gym_id', $gyms->first()?->id);
 
         // Start with user's bookings
         $query = Booking::with('gym', 'user')
@@ -84,9 +85,6 @@ class BookingController extends Controller
         if ($statusFilter) {
             $query->byStatus($statusFilter);
         }
-        if ($dateFrom && $dateTo) {
-            $query->byDateRange($dateFrom . ' 00:00:00', $dateTo . ' 23:59:59');
-        }
         
         // Apply email filter (Fixed missing implementation)
         if ($searchEmail) {
@@ -98,7 +96,7 @@ class BookingController extends Controller
         $bookings = $query->orderBy('booking_time', 'desc')->get();
         $timeSlots = $this->timeSlots;
 
-        return view('booking', compact('gyms', 'slotStatus', 'bookings', 'gymFilter', 'statusFilter', 'dateFrom', 'dateTo', 'searchEmail', 'timeSlots'));
+        return view('booking', compact('gyms', 'slotStatus', 'bookings', 'gymFilter', 'statusFilter', 'searchEmail', 'timeSlots', 'selectedDate', 'selectedGymId'));
     }
 
     public function store(StoreBookingRequest $request)
@@ -113,18 +111,23 @@ class BookingController extends Controller
             return back()->withInput()->withErrors(['time_slot' => 'This time slot is fully booked. Please choose another time.']);
         }
 
-        // Check for duplicate bookings
+        // Parse the full booking datetime to validate it is not in the past
+        $timezone = config('app.timezone');
         $startTime = explode(' - ', $validated['time_slot'])[0];
-        $bookingTime = Carbon::createFromFormat('Y-m-d g:i A', $validated['booking_date'] . ' ' . $startTime);
+        $bookingTime = Carbon::createFromFormat('Y-m-d g:i A', $validated['booking_date'] . ' ' . $startTime, $timezone);
+        $now = Carbon::now($timezone);
+
+        if ($bookingTime->isPast() || $bookingTime->equalTo($now)) {
+            return back()->withInput()->withErrors(['booking_date' => 'The selected booking date and time is in the past. Please choose a future time slot.']);
+        }
 
         $existingBooking = Booking::where('user_id', Auth::user()->user_id)
-            ->where('gym_id', $validated['gym_id'])
             ->where('booking_time', $bookingTime)
             ->where('status', '!=', 'Cancelled')
             ->first();
 
         if ($existingBooking) {
-            return back()->withInput()->withErrors(['time_slot' => 'You already have a booking for this gym at this time.']);
+            return back()->withInput()->withErrors(['time_slot' => 'You already have a booking at this time.']);
         }
 
         $booking = Booking::create([
@@ -201,11 +204,29 @@ class BookingController extends Controller
         $startTime = explode(' - ', $validated['time_slot'])[0];
         $bookingTime = Carbon::createFromFormat('Y-m-d g:i A', $validated['booking_date'] . ' ' . $startTime);
 
+        if ($bookingTime->isPast()) {
+            return back()->withInput()->withErrors(['booking_date' => 'The selected booking date and time must be in the future.']);
+        }
+
+        $existingBooking = Booking::where('user_id', Auth::user()->user_id)
+            ->where('booking_time', $bookingTime)
+            ->where('status', '!=', 'Cancelled')
+            ->where('id', '!=', $booking->id)
+            ->first();
+
+        if ($existingBooking) {
+            return back()->withInput()->withErrors(['time_slot' => 'You already have a booking at this time.']);
+        }
+
         $booking->update([
             'gym_id' => $validated['gym_id'],
             'booking_time' => $bookingTime,
             'status' => 'Confirmed',
         ]);
+
+        if (Auth::user()->isAdmin()) {
+            return redirect()->route('admin.dashboard')->with('status', 'Booking updated successfully.');
+        }
 
         return redirect()->route('booking.index')->with('status', 'Booking updated successfully.');
     }
@@ -216,7 +237,7 @@ class BookingController extends Controller
 
         $booking->delete();
 
-        if (Auth::user()->role === 'admin') {
+        if (Auth::user()->isAdmin()) {
             return redirect()->route('admin.dashboard')->with('status', 'Booking has been deleted.');
         }
 

@@ -24,11 +24,6 @@ Route::middleware('auth')->group(function () {
     Route::put('/booking/{booking}', [BookingController::class, 'update'])->name('booking.update');
     Route::delete('/booking/{booking}', [BookingController::class, 'destroy'])->name('booking.destroy');
     Route::post('/booking', [BookingController::class, 'store'])->name('booking.store');
-
-    // Email verification routes
-    Route::get('/email/verify', [AuthController::class, 'verifyEmail'])->name('verification.notice');
-    Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'verifyHandler'])->middleware('signed')->name('verification.verify');
-    Route::post('/email/resend', [AuthController::class, 'resendVerificationEmail'])->middleware('throttle:6,1')->name('verification.send');
 });
 
 // Admin routes - protected by auth and can:access-admin-panel middleware
@@ -36,6 +31,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/dashboard', [AdminBookingController::class, 'dashboard'])->name('dashboard');
     Route::patch('/booking/{booking}', [AdminBookingController::class, 'update'])->name('booking.update');
     Route::delete('/booking/{booking}', [AdminBookingController::class, 'destroy'])->name('booking.destroy');
+    Route::resource('gyms', \App\Http\Controllers\AdminGymController::class)->except(['show']);
 });
 
 

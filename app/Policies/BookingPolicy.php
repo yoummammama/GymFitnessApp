@@ -12,7 +12,7 @@ class BookingPolicy
      */
     public function view(User $user, Booking $booking): bool
     {
-        return $user->user_id === $booking->user_id || $user->role === 'admin';
+        return (string) $user->user_id === (string) $booking->user_id || $user->isAdmin();
     }
 
     /**
@@ -20,7 +20,7 @@ class BookingPolicy
      */
     public function update(User $user, Booking $booking): bool
     {
-        return $user->user_id === $booking->user_id || $user->role === 'admin';
+        return (string) $user->user_id === (string) $booking->user_id || $user->isAdmin();
     }
 
     /**
@@ -28,7 +28,7 @@ class BookingPolicy
      */
     public function delete(User $user, Booking $booking): bool
     {
-        return $user->user_id === $booking->user_id || $user->role === 'admin';
+        return (string) $user->user_id === (string) $booking->user_id || $user->isAdmin();
     }
 
     /**
@@ -44,7 +44,7 @@ class BookingPolicy
      */
     public function restore(User $user, Booking $booking): bool
     {
-        return $user->role === 'admin';
+        return $user->isAdmin();
     }
 
     /**
@@ -52,6 +52,6 @@ class BookingPolicy
      */
     public function forceDelete(User $user, Booking $booking): bool
     {
-        return $user->role === 'admin';
+        return $user->isAdmin();
     }
 }

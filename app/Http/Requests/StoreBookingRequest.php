@@ -33,6 +33,19 @@ class StoreBookingRequest extends FormRequest
                 'date',
                 'after_or_equal:today',
                 'date_format:Y-m-d',
+                function ($attribute, $value, $fail) {
+                    // If the booking date is today, check if the time slot has already passed
+                    if ($value === today()->format('Y-m-d') && $this->input('time_slot')) {
+                        $startTime = explode(' - ', $this->input('time_slot'))[0];
+                        $timezone = config('app.timezone');
+                        $bookingTime = \Carbon\Carbon::createFromFormat('Y-m-d g:i A', $value . ' ' . $startTime, $timezone);
+                        $now = \Carbon\Carbon::now($timezone);
+
+                        if ($bookingTime->isPast() || $bookingTime->equalTo($now)) {
+                            $fail('The selected booking date and time is in the past. Please choose a future time slot.');
+                        }
+                    }
+                },
             ],
             'time_slot' => [
                 'required',

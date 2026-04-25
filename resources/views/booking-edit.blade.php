@@ -15,7 +15,9 @@
                     <h1 class="mt-3 text-3xl font-semibold text-white sm:text-4xl">Edit booking</h1>
                 </div>
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
-                    <a href="{{ route('booking.index') }}" class="inline-flex items-center justify-center rounded-full border border-white/20 bg-white/5 px-6 py-3 text-sm uppercase tracking-[0.15em] text-white transition hover:bg-white/10">Back to Bookings</a>
+                    @unless(auth()->user() && auth()->user()->isAdmin())
+                        <a href="{{ route('booking.index') }}" class="inline-flex items-center justify-center rounded-full border border-white/20 bg-white/5 px-6 py-3 text-sm uppercase tracking-[0.15em] text-white transition hover:bg-white/10">Back to Bookings</a>
+                    @endunless
                     <a href="{{ route('dashboard') }}" class="inline-flex items-center justify-center rounded-full bg-[#f97316] px-6 py-3 text-sm font-semibold uppercase tracking-[0.15em] text-slate-950 transition hover:bg-[#fb923c]">Dashboard</a>
                 </div>
             </header>
@@ -24,6 +26,22 @@
                 <form method="POST" action="{{ route('booking.update', $booking) }}" class="space-y-6">
                     @csrf
                     @method('PUT')
+
+                    @if (session('status'))
+                        <div class="rounded-3xl border border-emerald-500/20 bg-emerald-500/10 p-4 text-sm text-emerald-50">
+                            {{ session('status') }}
+                        </div>
+                    @endif
+
+                    @if ($errors->any())
+                        <div class="rounded-3xl border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-100">
+                            <ul class="space-y-1">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
 
                     <div class="grid gap-6 lg:grid-cols-2">
                         <label class="block text-sm font-medium text-slate-200">
@@ -37,7 +55,7 @@
 
                         <label class="block text-sm font-medium text-slate-200">
                             Workout date
-                            <input type="date" name="booking_date" value="{{ old('booking_date', $booking->booking_time->format('Y-m-d')) }}" required class="mt-2 w-full rounded-3xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white outline-none transition focus:border-[#f97316] focus:ring-2 focus:ring-[#f97316]/30" />
+                            <input type="date" name="booking_date" value="{{ old('booking_date', $booking->booking_time->format('Y-m-d')) }}" min="{{ date('Y-m-d') }}" required class="mt-2 w-full rounded-3xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white outline-none transition focus:border-[#f97316] focus:ring-2 focus:ring-[#f97316]/30" />
                         </label>
                     </div>
 

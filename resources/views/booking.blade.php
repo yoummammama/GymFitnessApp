@@ -57,22 +57,22 @@
                                 Gym branch
                                 <select name="gym_id" required class="mt-2 w-full rounded-3xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white outline-none transition focus:border-[#f97316] focus:ring-2 focus:ring-[#f97316]/30">
                                     @foreach ($gyms as $gym)
-                                        <option value="{{ $gym->id }}" @selected(old('gym_id') == $gym->id)>{{ $gym->name }} — {{ $gym->campus_location }}</option>
+                                        <option value="{{ $gym->id }}" @selected(old('gym_id', request('gym_id', $selectedGymId)) == $gym->id)>{{ $gym->name }} — {{ $gym->campus_location }}</option>
                                     @endforeach
                                 </select>
                             </label>
 
                             <label class="block text-sm font-medium text-slate-200">
                                 Workout date
-                                <input type="date" name="booking_date" value="{{ old('booking_date', date('Y-m-d')) }}" required class="mt-2 w-full rounded-3xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white outline-none transition focus:border-[#f97316] focus:ring-2 focus:ring-[#f97316]/30" />
+                                <input type="date" id="booking-date" name="booking_date" value="{{ old('booking_date', $selectedDate ?? date('Y-m-d')) }}" min="{{ date('Y-m-d') }}" required class="mt-2 w-full rounded-3xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white outline-none transition focus:border-[#f97316] focus:ring-2 focus:ring-[#f97316]/30" />
                             </label>
 
                             <label class="block text-sm font-medium text-slate-200">
                                 Time slot
-                                <select name="time_slot" required class="mt-2 w-full rounded-3xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white outline-none transition focus:border-[#f97316] focus:ring-2 focus:ring-[#f97316]/30">
+                                <select name="time_slot" id="time-slot" required class="mt-2 w-full rounded-3xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white outline-none transition focus:border-[#f97316] focus:ring-2 focus:ring-[#f97316]/30">
                                     <option value="">Select a time slot</option>
                                     @foreach ($timeSlots as $slot)
-                                        <option value="{{ $slot }}" @selected(old('time_slot') === $slot)>{{ $slot }}</option>
+                                        <option value="{{ $slot }}" @selected(old('time_slot', request('time_slot')) === $slot)>{{ $slot }}</option>
                                     @endforeach
                                 </select>
                             </label>
@@ -100,7 +100,7 @@
                         {{-- ===== FILTER FORM (CO1 #5) ===== --}}
                         <form method="GET" action="{{ route('booking.index') }}" class="mb-6 space-y-3">
                             <p class="text-xs uppercase tracking-[0.25em] text-slate-400">Filter bookings</p>
-                            <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                            <div class="grid gap-3 sm:grid-cols-2">
                                 {{-- Gym filter --}}
                                 <select name="gym_id" class="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-2.5 text-sm text-white outline-none transition focus:border-[#f97316] focus:ring-1 focus:ring-[#f97316]/30">
                                     <option value="">All Gyms</option>
@@ -116,16 +116,6 @@
                                         <option value="{{ $s }}" @selected($statusFilter === $s)>{{ $s }}</option>
                                     @endforeach
                                 </select>
-
-                                {{-- Date from --}}
-                                <input type="date" name="date_from" value="{{ $dateFrom }}"
-                                    class="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-2.5 text-sm text-white outline-none transition focus:border-[#f97316] focus:ring-1 focus:ring-[#f97316]/30"
-                                    placeholder="From date" />
-
-                                {{-- Date to --}}
-                                <input type="date" name="date_to" value="{{ $dateTo }}"
-                                    class="w-full rounded-2xl border border-white/10 bg-slate-900 px-4 py-2.5 text-sm text-white outline-none transition focus:border-[#f97316] focus:ring-1 focus:ring-[#f97316]/30"
-                                    placeholder="To date" />
                             </div>
                             <div class="flex gap-3 pt-1">
                                 <button type="submit" class="rounded-full bg-[#f97316] px-5 py-2 text-xs font-semibold uppercase tracking-[0.15em] text-slate-950 transition hover:bg-[#fb923c]">Apply Filters</button>
@@ -198,6 +188,7 @@
         const statusBadge = document.getElementById('statusBadge');
         const gymSelect = document.querySelector('[name="gym_id"]');
         const timeSelect = document.querySelector('[name="time_slot"]');
+        const dateInput = document.getElementById('booking-date');
 
         const badgeClasses = {
             Available: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300',
@@ -216,6 +207,14 @@
 
         gymSelect.addEventListener('change', updateStatusBadge);
         timeSelect.addEventListener('change', updateStatusBadge);
+
+        dateInput.addEventListener('change', () => {
+            const params = new URLSearchParams(window.location.search);
+            params.set('booking_date', dateInput.value);
+            params.set('gym_id', gymSelect.value);
+            params.set('time_slot', timeSelect.value);
+            window.location.search = params.toString();
+        });
 
         updateStatusBadge();
     </script>
