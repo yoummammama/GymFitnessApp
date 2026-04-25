@@ -160,12 +160,21 @@
                                                 default => 'bg-white/10 text-slate-200',
                                             };
                                         @endphp
-                                        <tr>
+                                        <tr class="group cursor-pointer hover:bg-white/5 transition-colors" 
+                                            onclick="window.location='{{ route('booking.show', $booking->id) }}'">
                                             <td class="px-4 py-4 text-white">{{ $booking->gym->name ?? 'Unknown' }}</td>
-                                            <td class="px-4 py-4">{{ $booking->booking_time->format('M d, Y') }}</td>
-                                            <td class="px-4 py-4">{{ $booking->booking_time->format('g:i A') }}</td>
+                                            <td class="px-4 py-4">{{ $booking->booking_time->format('M d') }}</td>
+                                            <td class="px-4 py-4">{{ $booking->booking_time->format(' Y g:i A') }}</td>
                                             <td class="px-4 py-4">
                                                 <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.15em] {{ $statusClass }}">{{ $status }}</span>
+                                            </td>
+                                            <td class="px-4 py-4" onclick="event.stopPropagation();">
+                                                {{-- onclick stopPropagation prevents the row click when clicking specific action buttons --}}
+                                                @if($booking->status !== 'Cancelled')
+                                                    <a href="{{ route('booking.edit', $booking->id) }}" class="inline-flex items-center justify-center rounded-full border border-white/20 bg-white/5 px-4 py-2 text-xs uppercase tracking-[0.15em] text-white transition hover:bg-white/10">Edit</a>
+                                                @else
+                                                    <span class="text-xs text-slate-500 uppercase tracking-widest">No Action</span>
+                                                @endif
                                             </td>
                                         </tr>
                                     @endforeach
