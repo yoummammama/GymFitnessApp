@@ -96,7 +96,15 @@ class BookingController extends Controller
         $bookings = $query->orderBy('booking_time', 'desc')->get();
         $timeSlots = $this->timeSlots;
 
-        return view('booking', compact('gyms', 'slotStatus', 'bookings', 'gymFilter', 'statusFilter', 'searchEmail', 'timeSlots', 'selectedDate', 'selectedGymId'));
+        // Get recently viewed bookings from cookie
+        $recentlyViewedIds = json_decode($request->cookie('recently_viewed_bookings', '[]'), true);
+        $recentlyViewedBookings = Booking::with('gym')
+            ->whereIn('id', $recentlyViewedIds)
+            ->get()
+            ->sortBy(fn($b) => array_search($b->id, $recentlyViewedIds))
+            ->values();
+
+        return view('booking', compact('gyms', 'slotStatus', 'bookings', 'gymFilter', 'statusFilter', 'searchEmail', 'timeSlots', 'selectedDate', 'selectedGymId', 'recentlyViewedBookings'));
     }
 
     public function store(StoreBookingRequest $request)
