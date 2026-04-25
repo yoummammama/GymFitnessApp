@@ -21,8 +21,8 @@ A modern, responsive fitness center website built with Laravel and Tailwind CSS.
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
-   cd GymFitnessSystem
+   git clone https://github.com/yoummammama/GymFitnessApp.git
+   cd GymFitnessApp
    ```
 
 2. **Download Composer** (if not already installed)
