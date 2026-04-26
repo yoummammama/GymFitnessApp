@@ -117,10 +117,10 @@
                                                     default => 'bg-white/10 text-slate-200',
                                                 };
                                             @endphp
-                                            <tr class="group hover:bg-white/[0.02] transition">
-                                                <td class="px-4 py-4 font-medium text-white">{{ $booking->gym->name ?? 'Unknown' }}</td>
-                                                <td class="px-4 py-4">{{ $booking->booking_time->format('M d') }}</td>
-                                                <td class="px-4 py-4">{{ $booking->booking_time->format('g:i A') }}</td>
+                                            <tr class="group hover:bg-white/[0.02] transition cursor-pointer">
+                                                <td class="px-4 py-4 font-medium text-white"><a href="{{ route('booking.show', $booking->id) }}" class="hover:text-[#f97316] transition">{{ $booking->gym->name ?? 'Unknown' }}</a></td>
+                                                <td class="px-4 py-4"><a href="{{ route('booking.show', $booking->id) }}" class="hover:text-[#f97316] transition">{{ $booking->booking_time->format('M d') }}</a></td>
+                                                <td class="px-4 py-4"><a href="{{ route('booking.show', $booking->id) }}" class="hover:text-[#f97316] transition">{{ $booking->booking_time->format('g:i A') }}</a></td>
                                                 <td class="px-4 py-4">
                                                     <span class="rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider {{ $statusClass }}">{{ $status }}</span>
                                                 </td>
